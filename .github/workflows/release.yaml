@@ -36,7 +36,6 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: bump version
         run: |-
-          yarn bump
           poetry version $(cat dist/version.txt | tr -s '
           ')
       - name: build
