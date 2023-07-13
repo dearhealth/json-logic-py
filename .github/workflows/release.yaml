@@ -52,6 +52,6 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |-
           tar -czf dist.tar.gz dist
-          errout=$(mktemp); gh release create  dist.tar.gz -R $GITHUB_REPOSITORY --target $GITHUB_REF 2> $errout && true; exitcode=$?; if [ $exitcode -ne 0 ] && ! grep -q "Release.tag_name already exists" $errout; then cat $errout; exit $exitcode; fi
+          errout=$(mktemp); gh release create
       - name: Publish
         run: poetry publish -r dh_repo
