@@ -24,12 +24,6 @@ jobs:
         run: |-
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-          always-auth: true
-          cache: yarn
       - id: setup-python
         uses: actions/setup-python@v4
         with:
