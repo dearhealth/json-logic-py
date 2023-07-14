@@ -7,7 +7,8 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "dh-json-logic"
 version = "1.0"
-description = ""
+description = "A fork of https://github.com/YaraslauZhylko/json-logic-py/"
+readme="README.md"
 authors = [ "dearhealth" ]
 
   [tool.poetry.dependencies]
