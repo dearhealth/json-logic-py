@@ -54,4 +54,4 @@ jobs:
           tar -czf dist.tar.gz dist
           errout=$(mktemp); gh release create dist.tar.gz -R $GITHUB_REPOSITORY --target $GITHUB_REF 2> $errout && true; exitcode=$?; if [ $exitcode -ne 0 ] && ! grep -q "Release.tag_name already exists" $errout; then cat $errout; exit $exitcode; fi
       - name: Publish
-        run: poetry publish
+        run: poetry publish -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
