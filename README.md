@@ -1,5 +1,5 @@
 # json-logic-py
-**NOTE:** This is fork of https://github.com/YaraslauZhylko/json-logic-py/ created for use for our internal projects.
+**NOTE:** This is fork of https://github.com/YaraslauZhylko/json-logic-py/ created for use in our internal projects.
 
 
 ## Introduction
