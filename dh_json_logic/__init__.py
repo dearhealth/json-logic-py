@@ -388,10 +388,10 @@ def _if(data, *args):
           (e.g.: from 0,1 to 2,3) and evaluate them.
     """
     for i in range(0, len(args) - 1, 2):
-        if _truthy(jsonLogic(args[i], data)):
-            return jsonLogic(args[i + 1], data)
+        if _truthy(_jsonLogic(args[i], data)):
+            return _jsonLogic(args[i + 1], data)
     if len(args) % 2:
-        return jsonLogic(args[-1], data)
+        return _jsonLogic(args[-1], data)
     else:
         return None
 
@@ -414,7 +414,7 @@ def _and(data, *args):
     """
     current = False
     for current in args:
-        current = jsonLogic(current, data)
+        current = _jsonLogic(current, data)
         if _falsy(current):
             return current  # First falsy argument
     return current  # Last argument
@@ -430,7 +430,7 @@ def _or(data, *args):
     """
     current = False
     for current in args:
-        current = jsonLogic(current, data)
+        current = _jsonLogic(current, data)
         if _truthy(current):
             return current  # First truthy argument
     return current  # Last argument
@@ -475,11 +475,11 @@ def _filter(data, scopedData, scopedLogic):
     If 'scopedData' argument does not evaluate to an array, an empty array
     is returned.
     """
-    scopedData = jsonLogic(scopedData, data)
+    scopedData = _jsonLogic(scopedData, data)
     if not _is_array(scopedData):
         return []
     return list(filter(
-        lambda datum: _truthy(jsonLogic(scopedLogic, datum)),
+        lambda datum: _truthy(_jsonLogic(scopedLogic, datum)),
         scopedData))
 
 
@@ -510,11 +510,11 @@ def _map(data, scopedData, scopedLogic):
     If 'scopedData' argument does not evaluate to an array, an empty array
     is returned.
     """
-    scopedData = jsonLogic(scopedData, data)
+    scopedData = _jsonLogic(scopedData, data)
     if not _is_array(scopedData):
         return []
     return list(map(
-        lambda datum: jsonLogic(scopedLogic, datum),
+        lambda datum: _jsonLogic(scopedLogic, datum),
         scopedData))
 
 
@@ -553,11 +553,11 @@ def _reduce(data, scopedData, scopedLogic, initial=None):
     If 'scopedData' argument does not evaluate to an array, the 'initial'
     value is returned.
     """
-    scopedData = jsonLogic(scopedData, data)
+    scopedData = _jsonLogic(scopedData, data)
     if not _is_array(scopedData):
         return initial
     return reduce(
-        lambda accumulator, current: jsonLogic(
+        lambda accumulator, current: _jsonLogic(
             scopedLogic, {'accumulator': accumulator, 'current': current}),
         scopedData, initial)
 
@@ -594,13 +594,13 @@ def _all(data, scopedData, scopedLogic):
     N.B.: According to current core JsonLogic evaluation of 'scopedData'
     elements stops upon encountering first falsy value.
     """
-    scopedData = jsonLogic(scopedData, data)
+    scopedData = _jsonLogic(scopedData, data)
     if not _is_array(scopedData):
         return False
     if len(scopedData) == 0:
         return False  # "all" of an empty set is false
     for datum in scopedData:
-        if _falsy(jsonLogic(scopedLogic, datum)):
+        if _falsy(_jsonLogic(scopedLogic, datum)):
             return False  # First falsy, short circuit
     return True  # All were truthy
 
@@ -772,6 +772,14 @@ _data_operations = {
 # MAIN LOGIC
 
 def jsonLogic(logic, data=None):
+    try:
+        return _jsonLogic(logic, data)
+    except TypeError as e:
+        logging.error("JsonLogic: %s", e)
+        return None
+
+
+def _jsonLogic(logic, data=None):
     """
     Evaluate provided JsonLogic using given data (if any).
     If a single JsonLogic rule is provided - return a single resulting value.
@@ -781,7 +789,7 @@ def jsonLogic(logic, data=None):
 
     # Is this an array of JsonLogic rules?
     if _is_array(logic):
-        return list(map(lambda sublogic: jsonLogic(sublogic, data), logic))
+        return list(map(lambda sublogic: _jsonLogic(sublogic, data), logic))
 
     # You've recursed to a primitive, stop!
     if not is_logic(logic):
@@ -807,7 +815,7 @@ def jsonLogic(logic, data=None):
         return _scoped_operations[operator](data, *values)
 
     # Recursion!
-    values = [jsonLogic(val, data) for val in values]
+    values = [_jsonLogic(val, data) for val in values]
 
     # Apply data retrieval operations
     if operator in _data_operations:
