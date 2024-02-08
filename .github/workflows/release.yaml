@@ -52,6 +52,6 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
         run: |-
           tar -czf dist.tar.gz dist
-          errout=$(mktemp); gh release create dist.tar.gz -R $GITHUB_REPOSITORY --target $GITHUB_REF 2> $errout && true; exitcode=$?; if [ $exitcode -ne 0 ] && ! grep -q "Release.tag_name already exists" $errout; then cat $errout; exit $exitcode; fi
+          errout=$(mktemp); gh release create v$(poetry version|cut -d\  -f2) dist.tar.gz -R $GITHUB_REPOSITORY --target $GITHUB_REF 2> $errout && true; exitcode=$?; if [ $exitcode -ne 0 ] && ! grep -q "Release.tag_name already exists" $errout; then cat $errout; exit $exitcode; fi
       - name: Publish
         run: poetry publish -u ${{ secrets.PYPI_USERNAME }} -p ${{ secrets.PYPI_PASSWORD }}
