@@ -775,7 +775,7 @@ def jsonLogic(logic, data=None):
     try:
         return _jsonLogic(logic, data)
     except TypeError as e:
-        logging.error("JsonLogic: %s", e)
+        logging.warning("JsonLogic: %s", e)
         return None
 
 
